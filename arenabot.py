@@ -19,6 +19,7 @@ def fitnessRobot(listOfCommands, visualize=False) :
 	wall1["y"] = 0
 	wall1["width"] = 10
 	wall1["height"] = 80
+    
 
 	wall2 = dict()
 	wall2["x"] = 70
@@ -28,6 +29,7 @@ def fitnessRobot(listOfCommands, visualize=False) :
 
 	walls.append(wall1)
 	walls.append(wall2)
+    
 	
 	# initial position and orientation of the robot
 	startX = robotX = 10
@@ -40,30 +42,104 @@ def fitnessRobot(listOfCommands, visualize=False) :
 	
 	# this is a list of points that the robot will visit; used later to visualize its path
 	positions = []
-	positions.append( [robotX, robotY] )
+	positions.append([robotX,robotY])
 	
     
 	# TODO move robot, check that the robot stays inside the arena and stop movement if a wall is hit
-    etat_mur=0
     #listOfCommands est de la forme [(move,20),(rotate,90),...,]
     for command in listOfCommands:
-        (x,y)=command
-        if x=="rotate":
+        (mode,deplacement)=command
+        
+        if mode=="rotate":
             startDegrees+=(y%360)
-        elif x="move":
+            
+        elif mode=="move":
+            etat_mur=0
+            
+            #le robot va à gauche
             if startDegrees==0:
+                proche_mur=walls[0]
+                for wall in walls :
+                    
+                    #si le robot a croisé un mur
+                    if (robotX < wall["x"]) and robotX+deplacement>wall["x"]:
+                        #on indique que le mur a croisé un mur
+                        etat_mur=1
+                        
+                        #on actualise le mur le plus proche
+                        if wall["x"]<proche_mur["x"]:
+                            proche_mur=wall
                 
+                if etat_mur=1:
+                    robotX=proche_mur["x"]
+                elif etat_mur=0:
+                    robotX+=deplacement
+               
+            #le robot va en haut
             elif startDegrees==90:
+                proche_mur=walls[0]
+                for wall in walls :
+                    
+                    #si le robot a croisé un mur
+                    if (robotY < wall["y"]) and robotY+deplacement>wall["y"]:
+                        #on indique que le mur a croisé un mur
+                        etat_mur=1
+                        #on actualise le mur le plus proche
+                        if wall["y"]<proche_mur["y"]:
+                            proche_mur=wall
                 
-
+                if etat_mur=1:
+                    robotY=proche_mur["y"]
+                elif etat_mur=0:
+                    robotY+=deplacement
+                    
+                    
+                    
             elif startDegrees==180:
+                proche_mur=walls[0]
+                for wall in walls :
+                    
+                    #si le robot a croisé un mur
+                    if (robotX > wall["x"]) and (robotX+deplacement<wall["x"]):
+                        #on indique que le mur a croisé un mur
+                        etat_mur=1
+                        
+                        #on actualise le mur le plus proche
+                        if wall["x"]>proche_mur["x"]:
+                            proche_mur=wall
                 
+                if etat_mur=1:
+                    robotX=proche_mur["x"]
+                elif etat_mur=0:
+                    robotX-=deplacement
+                
+                    
+                    
+                    
             elif startDegrees==270:
+               proche_mur=walls[0]
+                for wall in walls :
+                    
+                    #si le robot a croisé un mur
+                    if (robotY > wall["y"]) and robotY+deplacement<wall["y"]:
+                        #on indique que le mur a croisé un mur
+                        etat_mur=1
+                        #on actualise le mur le plus proche
+                        if wall["y"]>proche_mur["y"]:
+                            proche_mur=wall
                 
+                if etat_mur=1:
+                    robotY=proche_mur["y"]
+                elif etat_mur=0:
+                    robotY-=deplacement
+                    
+        print(robotX,robotY)
+        positions.append( [robotX, robotY] )
+
 
 	# TODO measure distance from objective
     
-	distanceFromObjective = 0
+	distanceFromObjective = abs(robotX-objectiveX) + abs(robotY-objectiveY)
 	
 	# this is optional, argument "visualize" has to be explicitly set to "True" when function is called
 	if visualize :
