@@ -6,7 +6,6 @@ import inspyred
 import random
 import numpy as np
 
-
 random_number_generator = random.Random()
 random_number_generator.seed(42)
 
@@ -61,30 +60,31 @@ def fitnessRobot(listOfCommands, visualize=False) :
 	# this is a list of points that the robot will visit; used later to visualize its path
 	positions = []
 	positions.append( [robotX, robotY] )
-	
+		
 	# TODO move robot, check that the robot stays inside the arena and stop movement if a wall is hit
-	# TODO measure distance from objective
-	
-	
-	# TODO move robot, check that the robot stays inside the arena and stop movement if a wall is hit
-	#listOfCommands est de la forme [(move,20),(rotate,90),...,]
+	#listOfCommands est de la forme ["move 20","rotate 90",...,]
 	for command in listOfCommands:
-		mode,deplacement=command
-	
+		tab=command.split()
+		mode=tab[0]
+		deplacement=tab[1]
+		deplacement=int(deplacement)
+		print(mode,deplacement)
+		
 		if mode=="rotate":
-			startDegrees+=(y%360)
-			
+			startDegrees=(startDegrees+deplacement)%360
+			print(startDegrees,"degrés")
+
 		elif mode=="move":
 			etat_mur=0
-		
-		#le robot va à gauche
+		#le robot va à droite
 			if startDegrees==0:
 				proche_mur=walls[0]
+				#on parcourt tous les murs
 				for wall in walls :
 				
 					#si le robot a croisé un mur
-					if (robotX < wall["x"]) and robotX+deplacement>wall["x"]:
-						#on indique que le mur a croisé un mur
+					if robotX < wall["x"] and robotX+deplacement>=wall["x"]and (wall["y"]<=robotY<=wall["y"]+wall["height"]):
+						#on indique que le robot a croisé un mur
 						etat_mur=1
 						
 						#on actualise le mur le plus proche
@@ -92,17 +92,18 @@ def fitnessRobot(listOfCommands, visualize=False) :
 							proche_mur=wall
 				
 				if etat_mur==1:
-					robotX=proche_mur["x"]
+					robotX=proche_mur["x"]-1
 				elif etat_mur==0:
-					robotX+=deplacement
+					robotX=min(robotX+deplacement,99)
 		
 			#le robot va en haut
 			elif startDegrees==90:
+
 				proche_mur=walls[0]
 				for wall in walls :
-					
+					print(wall["y"])
 					#si le robot a croisé un mur
-					if (robotY < wall["y"]) and robotY+deplacement>wall["y"]:
+					if ((robotY < wall["y"]) and (robotY+deplacement>=wall["y"]) and (wall["x"]<=robotX<=wall["x"]+wall["width"])):
 						#on indique que le mur a croisé un mur
 						etat_mur=1
 						#on actualise le mur le plus proche
@@ -110,18 +111,18 @@ def fitnessRobot(listOfCommands, visualize=False) :
 							proche_mur=wall
 			
 				if etat_mur==1:
-					robotY=proche_mur["y"]
+					robotY=proche_mur["y"]-1
 				elif etat_mur==0:
-					robotY+=deplacement
+					robotY=min(robotY+deplacement,99)
 				
 				
-				
+			#le robot va à gauche
 			elif startDegrees==180:
 				proche_mur=walls[0]
 				for wall in walls :
 					
 					#si le robot a croisé un mur
-					if (robotX > wall["x"]) and (robotX+deplacement<wall["x"]):
+					if (robotX > wall["x"]) and (robotX-deplacement<=wall["x"]) and (wall["y"]<=robotY<=wall["y"]+wall["height"]):
 						#on indique que le mur a croisé un mur
 						etat_mur=1
 						
@@ -130,19 +131,19 @@ def fitnessRobot(listOfCommands, visualize=False) :
 							proche_mur=wall
 				
 				if etat_mur==1:
-					robotX=proche_mur["x"]
+					robotX=proche_mur["x"] +1
 				elif etat_mur==0:
-					robotX-=deplacement
+					robotX=max(robotX-deplacement,1)
 			
 				
 				
-				
+			#le robot va en bas 
 			elif startDegrees==270:
 				proche_mur=walls[0]
 				for wall in walls :
 				
 					#si le robot a croisé un mur
-					if (robotY > wall["y"]) and robotY+deplacement<wall["y"]:
+					if (robotY > wall["y"]) and robotY-deplacement<=wall["y"] and (wall["x"]<=robotX<=wall["x"]+wall["width"]):
 						#on indique que le mur a croisé un mur
 						etat_mur=1
 						#on actualise le mur le plus proche
@@ -150,11 +151,10 @@ def fitnessRobot(listOfCommands, visualize=False) :
 							proche_mur=wall
 			
 				if etat_mur==1:
-					robotY=proche_mur["y"]
+					robotY=proche_mur["y"] + 1
 				elif etat_mur==0:
-					robotY-=deplacement
+					robotY=max(robotY-deplacement,1)
 					
-		#print(robotX,robotY)
 		positions.append( [robotX, robotY] )
 
 
@@ -163,7 +163,6 @@ def fitnessRobot(listOfCommands, visualize=False) :
 	distanceFromObjective = abs(robotX-objectiveX) + abs(robotY-objectiveY)
 	
 	
-	distanceFromObjective = 0
 	
 	# this is optional, argument "visualize" has to be explicitly set to "True" when function is called
 	if visualize :
@@ -243,7 +242,7 @@ def generator_arenabot(random,args):
 def main() :
 	
 	# first, let's see what happens with an empty list of commands
-	listOfCommands = [("move",50)]
+	listOfCommands = ["rotate 180" ,"move 50","rotate 90","move 60"]
 	d=fitnessRobot(listOfCommands, visualize=True)
 	print(d)
 	

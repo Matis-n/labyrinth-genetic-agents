@@ -2,7 +2,6 @@
 # by Alberto Tonda, 2018 <alberto.tonda@gmail.com>
 
 import sys
-import inspyred
 
 '''This function accepts in input a list of strings, and tries to parse them to update the position of a robot. Then returns distance from objective.'''
 def fitnessRobot(listOfCommands, visualize=False) :
@@ -46,9 +45,12 @@ def fitnessRobot(listOfCommands, visualize=False) :
 	
     
 	# TODO move robot, check that the robot stays inside the arena and stop movement if a wall is hit
-    #listOfCommands est de la forme [(move,20),(rotate,90),...,]
+    #listOfCommands est de la forme ["move 20","rotate 90",...,]
+    
     for command in listOfCommands:
-        (mode,deplacement)=command
+        tab=command.split()
+        mode=tab[0]
+        deplacement=tab[1]
         
         if mode=="rotate":
             startDegrees+=(y%360)
@@ -61,7 +63,7 @@ def fitnessRobot(listOfCommands, visualize=False) :
                 proche_mur=walls[0]
                 for wall in walls :
                     
-                    #si le robot a croisé un mur
+                    #si le robot a croisé un mur 
                     if (robotX < wall["x"]) and robotX+deplacement>wall["x"]:
                         #on indique que le mur a croisé un mur
                         etat_mur=1
@@ -73,7 +75,8 @@ def fitnessRobot(listOfCommands, visualize=False) :
                 if etat_mur=1:
                     robotX=proche_mur["x"]
                 elif etat_mur=0:
-                    robotX+=deplacement
+                    robotX=min(robotX+deplacement,100)
+
                
             #le robot va en haut
             elif startDegrees==90:
@@ -91,10 +94,10 @@ def fitnessRobot(listOfCommands, visualize=False) :
                 if etat_mur=1:
                     robotY=proche_mur["y"]
                 elif etat_mur=0:
-                    robotY+=deplacement
+                    robotY=min(100,robotY+deplacement)
                     
                     
-                    
+                #le robot va à gauche   
             elif startDegrees==180:
                 proche_mur=walls[0]
                 for wall in walls :
@@ -111,11 +114,11 @@ def fitnessRobot(listOfCommands, visualize=False) :
                 if etat_mur=1:
                     robotX=proche_mur["x"]
                 elif etat_mur=0:
-                    robotX-=deplacement
+                    robotX=max(0,robotX-deplacement)
                 
                     
                     
-                    
+                 #le robot va en bas   
             elif startDegrees==270:
                proche_mur=walls[0]
                 for wall in walls :
@@ -131,7 +134,7 @@ def fitnessRobot(listOfCommands, visualize=False) :
                 if etat_mur=1:
                     robotY=proche_mur["y"]
                 elif etat_mur=0:
-                    robotY-=deplacement
+                    robotY=max(0,robotY-deplacement)
                     
         print(robotX,robotY)
         positions.append( [robotX, robotY] )
@@ -174,7 +177,7 @@ def fitnessRobot(listOfCommands, visualize=False) :
 def main() :
 	
 	# first, let's see what happens with an empty list of commands
-	listOfCommands = []
+	listOfCommands = [("move",20),("rotate",90),("move",10)]
 	fitnessRobot(listOfCommands, visualize=True)
 	
 	return 0
