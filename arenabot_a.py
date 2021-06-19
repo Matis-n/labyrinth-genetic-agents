@@ -211,7 +211,8 @@ def commande_au_hasard(proba):
 	else:
 		x="rotate"
 		value_rotate=random.choice([90,180,270])
-		return(x,value_rotate)
+		print(x,value_rotate)
+		return(x+' '+str(value_rotate))
 
 def generator_arenabot(random,args):
 	taille_liste=random.randint(1,args["max_taille_liste"])
