@@ -76,9 +76,10 @@ def fitnessRobot(listOfCommands, visualize=False) :
 
 		elif mode=="move":
 			etat_mur=0
+			etat_premier_mur=1
 		#le robot va à droite
 			if startDegrees==0:
-				proche_mur=walls[0]
+				
 				#on parcourt tous les murs
 				for wall in walls :
 				
@@ -87,6 +88,11 @@ def fitnessRobot(listOfCommands, visualize=False) :
 						#on indique que le robot a croisé un mur
 						etat_mur=1
 						
+						#si c'est le premier mur touché
+						if etat_premier_mur==1 :
+							proche_mur=wall
+							etat_premier_mur=0
+
 						#on actualise le mur le plus proche
 						if wall["x"]<proche_mur["x"]:
 							proche_mur=wall
@@ -99,13 +105,19 @@ def fitnessRobot(listOfCommands, visualize=False) :
 			#le robot va en haut
 			elif startDegrees==90:
 
-				proche_mur=walls[0]
 				for wall in walls :
 					print(wall["y"])
 					#si le robot a croisé un mur
 					if ((robotY < wall["y"]) and (robotY+deplacement>=wall["y"]) and (wall["x"]<=robotX<=wall["x"]+wall["width"])):
 						#on indique que le mur a croisé un mur
 						etat_mur=1
+						
+						#si c'est le premier mur touché
+						if etat_premier_mur==1 :
+							proche_mur=wall
+							etat_premier_mur=0
+							
+							
 						#on actualise le mur le plus proche
 						if wall["y"]<proche_mur["y"]:
 							proche_mur=wall
@@ -118,20 +130,24 @@ def fitnessRobot(listOfCommands, visualize=False) :
 				
 			#le robot va à gauche
 			elif startDegrees==180:
-				proche_mur=walls[0]
 				for wall in walls :
 					
 					#si le robot a croisé un mur
-					if (robotX > wall["x"]) and (robotX-deplacement<=wall["x"]) and (wall["y"]<=robotY<=wall["y"]+wall["height"]):
+					if (robotX > wall["x"]+wall["width"]) and (robotX-deplacement<=wall["x"]+wall["width"]) and (wall["y"]<=robotY<=wall["y"]+wall["height"]):
 						#on indique que le mur a croisé un mur
 						etat_mur=1
+						
+						#si c'est le premier mur touché
+						if etat_premier_mur==1 :
+							proche_mur=wall
+							etat_premier_mur=0
 						
 						#on actualise le mur le plus proche
 						if wall["x"]>proche_mur["x"]:
 							proche_mur=wall
 				
 				if etat_mur==1:
-					robotX=proche_mur["x"] +1
+					robotX=proche_mur["x"] +1+proche_mur["width"]
 				elif etat_mur==0:
 					robotX=max(robotX-deplacement,1)
 			
@@ -139,19 +155,24 @@ def fitnessRobot(listOfCommands, visualize=False) :
 				
 			#le robot va en bas 
 			elif startDegrees==270:
-				proche_mur=walls[0]
 				for wall in walls :
 				
 					#si le robot a croisé un mur
-					if (robotY > wall["y"]) and robotY-deplacement<=wall["y"] and (wall["x"]<=robotX<=wall["x"]+wall["width"]):
+					if robotY > (wall["y"]+wall["height"]) and robotY-deplacement<=(wall["y"]+wall["height"]) and (wall["x"]<=robotX<=wall["x"]+wall["width"]):
 						#on indique que le mur a croisé un mur
 						etat_mur=1
+						
+						#si c'est le premier mur touché
+						if etat_premier_mur==1 :
+							proche_mur=wall
+							etat_premier_mur=0
+							
 						#on actualise le mur le plus proche
 						if wall["y"]>proche_mur["y"]:
 							proche_mur=wall
 			
 				if etat_mur==1:
-					robotY=proche_mur["y"] + 1
+					robotY=proche_mur["y"] +proche_mur["height"] + 1
 				elif etat_mur==0:
 					robotY=max(robotY-deplacement,1)
 					
@@ -243,7 +264,7 @@ def generator_arenabot(random,args):
 def main() :
 	
 	# first, let's see what happens with an empty list of commands
-	listOfCommands = ["rotate 180" ,"move 50","rotate 90","move 60"]
+	listOfCommands = ["rotate 180" ,"move 50","rotate 90","move 60","move 10","rotate 90", "move 50", "rotate 90", "move 100","rotate 270","move 40","rotate 270", "move 35","rotate 270","move 50","rotate 270","move 10","rotate 270","move 50","rotate 270","move 50","rotate 270","move 30","rotate 270","move 90"]
 	d=fitnessRobot(listOfCommands, visualize=True)
 	print(d)
 	
