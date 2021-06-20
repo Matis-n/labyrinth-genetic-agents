@@ -46,14 +46,16 @@ def fitnessRobot(listOfCommands, visualize=False) :
     
 	# TODO move robot, check that the robot stays inside the arena and stop movement if a wall is hit
     #listOfCommands est de la forme ["move 20","rotate 90",...,]
+    etat_mur=0
     
     for command in listOfCommands:
+        
         tab=command.split()
         mode=tab[0]
         deplacement=tab[1]
         
         if mode=="rotate":
-            startDegrees+=(y%360)
+            startDegrees+=y%360
             
         elif mode=="move":
             etat_mur=0
@@ -72,9 +74,9 @@ def fitnessRobot(listOfCommands, visualize=False) :
                         if wall["x"]<proche_mur["x"]:
                             proche_mur=wall
                 
-                if etat_mur=1:
+                if etat_mur==1:
                     robotX=proche_mur["x"]
-                elif etat_mur=0:
+                elif etat_mur==0:
                     robotX=min(robotX+deplacement,100)
 
                
@@ -91,9 +93,9 @@ def fitnessRobot(listOfCommands, visualize=False) :
                         if wall["y"]<proche_mur["y"]:
                             proche_mur=wall
                 
-                if etat_mur=1:
+                if etat_mur==1:
                     robotY=proche_mur["y"]
-                elif etat_mur=0:
+                elif etat_mur==0:
                     robotY=min(100,robotY+deplacement)
                     
                     
@@ -111,9 +113,9 @@ def fitnessRobot(listOfCommands, visualize=False) :
                         if wall["x"]>proche_mur["x"]:
                             proche_mur=wall
                 
-                if etat_mur=1:
+                if etat_mur==1:
                     robotX=proche_mur["x"]
-                elif etat_mur=0:
+                elif etat_mur==0:
                     robotX=max(0,robotX-deplacement)
                 
                     
@@ -131,13 +133,14 @@ def fitnessRobot(listOfCommands, visualize=False) :
                         if wall["y"]>proche_mur["y"]:
                             proche_mur=wall
                 
-                if etat_mur=1:
+                if etat_mur==1:
                     robotY=proche_mur["y"]
-                elif etat_mur=0:
+                elif etat_mur==0:
                     robotY=max(0,robotY-deplacement)
                     
         print(robotX,robotY)
         positions.append( [robotX, robotY] )
+        print(positions)
 
 
 	# TODO measure distance from objective
